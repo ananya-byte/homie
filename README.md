@@ -1,7 +1,7 @@
 # homie
-<h1> Homie <\h1>
+<h1> Homie
 
-<h3> Homie is a ChatBot that enables HomeAtomation </h3> 
+<h3> Homie is a ChatBot that enables Home Automation </h3> 
 
 This project utilises the following technologies - 
 1. Python - CSV data, modules, telebot module
