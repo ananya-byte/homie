@@ -1,0 +1,3 @@
+ChatID,Name,Host,Guest
+<chat-id>,<chat-name>,YES,NO
+<chat-id>,<chat-name>,NO,YES
