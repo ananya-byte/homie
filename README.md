@@ -1,4 +1,3 @@
-# homie
 <h1> Homie
 
 <h3> Homie is a ChatBot that enables Home Automation </h3> 
