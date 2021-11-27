@@ -13,6 +13,6 @@ This Home Automation system enables the users to control the various Home Applia
 This project enables communication between the Home and the user.
 The host user i.e. the owner can add other users who can access the ChatBot.The owner can also distinguish between different users as Hosts or Guests. \
 Hosts can access the camera and also the appliances that are placed around the house. \
-Guests can only access the appliance. \
+Guests can only access the appliance. 
 
-The proposed system is just a prototype. \
+The proposed system is just a prototype.
