@@ -11,24 +11,32 @@ from subprocess import call
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-klights_input,klights_output = 17,14
-mlights_input,mlights_output = 27,23
-btlights_input,btlights_output = 22,24
-llights_input,llights_output = 5,25
+#initialising the  gpio pins, setting them as input and bed_output
+#initialising the output pins as zero so that all appliances are off
+gym_input,gym_output =
+GPIO.setup(gym_output, GPIO.OUT)
+GPIO.output(gym_output, 0) #Off initially
+GPIO.setup(gym_input, GPIO.IN)
 
-##arduino test
-GPIO.setup(klights_output, GPIO.OUT)
-GPIO.output(klights_output, 0) #Off initially
-GPIO.setup(mlights_output, GPIO.OUT)
-GPIO.output(mlights_output, 0)
-GPIO.setup(btlights_output, GPIO.OUT)
-GPIO.output(btlights_output, 0)
-GPIO.setup(llights_output, GPIO.OUT)
-GPIO.output(llights_output, 0)
-GPIO.setup(klights_input, GPIO.IN)
-GPIO.setup(mlights_input, GPIO.IN)
-GPIO.setup(btlights_input, GPIO.IN)
-GPIO.setup(llights_input, GPIO.IN)
+bed_input,bed_output =
+GPIO.setup(bed_output, GPIO.OUT)
+GPIO.output(bed_output, 0)
+GPIO.setup(bed_input, GPIO.IN)
+
+study_input,study_output =
+GPIO.setup(study_output, GPIO.OUT)
+GPIO.output(study_output, 0)
+GPIO.setup(study_input, GPIO.IN)
+
+hall_input,hall_output =
+GPIO.setup(hall_output, GPIO.OUT)
+GPIO.output(hall_output, 0)
+GPIO.setup(hall_input, GPIO.IN)
+
+dine_input,dine_output =
+GPIO.setup(dine_output, GPIO.OUT)
+GPIO.output(dine_output, 0)
+GPIO.setup(dine_input, GPIO.IN)
 
 predef_host = <host-chat-id>
 predefhost_name = '<host-name>'
@@ -58,10 +66,11 @@ def start_command(message):
 def menu_command(message):
     chat_id = message.chat.id
     keyboard = telebot.types.InlineKeyboardMarkup()
-    text = 'These are the following commands for homie: To control the appliances press /panel.'
+    text = '\nThese are the following commands for homie: To control the appliances press /panel.'
     if files.checkhost(chat_id):
-        text+='To get live camera feed press /camera.'
-    text+='You can alays return bak here by pressing /menu .'
+        text+='\n To get live camera feed press /camera.'
+    text+='You can always return back here by pressing /menu .'
+
     bot.send_message(chat_id,text)
 
 
@@ -73,44 +82,45 @@ def panel_command(message):
         bot.send_message(
            message.chat.id,
            'These are the following commands for each room:' +
-           'To control kitchen appliances press /kitchen.' +
-           'To control master bedroom appliances press /master.' +
-           'To control Living Room appliances press /living.'+
-           'To contact my creator press the below button.'
+           '\n To control the gym lights press /gym.' +
+           '\n To control the bedroom lights press /bedroom.' +
+           '\n To control study room lights press /study.'+
+           '\n To control living room lights press /living' +
+           '\n To control dining room lights press /dining'
         )
     else:
-        text = 'I\'m sorry, I don\'t nderstand what you are saying'
+        text = 'I\'m sorry, I don\'t understand what you\'re saying. Please return to menu by pressing /menu'
         bot.send_message(chat_id,text)
 
 
 
-@bot.message_handler(commands=['kitchen'])
-def kitchen_command(message):
+@bot.message_handler(commands=['gym'])
+def gym_command(message):
     chat_id = message.chat.id
     if (files.checkhost(chat_id) or files.checkguest(chat_id)):
         keyboard = telebot.types.InlineKeyboardMarkup()
         keyboard.row(
-            telebot.types.InlineKeyboardButton('Lights', callback_data='getp-klights')
+            telebot.types.InlineKeyboardButton('Lights', callback_data='getp-glights')
       )
         bot.send_message(message.chat.id, 'Click on the appliance of choice:', reply_markup=keyboard)
     else:
-        text = 'I\'m sorry, I don\'t nderstand what you are saying'
+        text = 'I\'m sorry, I don\'t understand what you are saying.'
         bot.send_message(chat_id,text)
 
 
-@bot.message_handler(commands=['master'])
-def master_command(message):
+@bot.message_handler(commands=['bedroom'])
+def bedroom_command(message):
     chat_id = message.chat.id
     if (files.checkhost(chat_id) or files.checkguest(chat_id)):
         keyboard = telebot.types.InlineKeyboardMarkup()
         keyboard.row(
-            telebot.types.InlineKeyboardButton('Lights', callback_data='getp-mlights')
+            telebot.types.InlineKeyboardButton('Lights', callback_data='getp-blights')
       )
         keyboard.row(
             telebot.types.InlineKeyboardButton('Bathroom Lights', callback_data='getp-btlights'))
         bot.send_message(message.chat.id, 'Click on the appliance of choice:', reply_markup=keyboard)
     else:
-        text = 'I\'m sorry, I don\'t nderstand what you are saying'
+        text = 'I\'m sorry, I don\'t understand what you are saying.'
         bot.send_message(chat_id,text)
 
 
