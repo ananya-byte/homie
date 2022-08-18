@@ -1,5 +1,5 @@
 import csv
-filename = "/home/pi/homie/permissions.csv"
+filename = "/home/pi/Desktop/homie/permissions.csv"
 
 def hosts_list():
     fields = []
@@ -40,7 +40,7 @@ def appendhost(chat_id,name):
         for row in csvreader:
             continue
         csvwriter = csv.writer(csvfile)
-        csvwriter.writerow(element) 
+        csvwriter.writerow(element)
 
 
 def appendguest(chat_id,name):

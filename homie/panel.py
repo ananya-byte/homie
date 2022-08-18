@@ -28,10 +28,10 @@ GPIO.setup(study_output, GPIO.OUT)
 GPIO.output(study_output, 0)
 GPIO.setup(study_input, GPIO.IN)
 
-hall_input,hall_output =
-GPIO.setup(hall_output, GPIO.OUT)
-GPIO.output(hall_output, 0)
-GPIO.setup(hall_input, GPIO.IN)
+living_input,living_output =
+GPIO.setup(living_output, GPIO.OUT)
+GPIO.output(living_output, 0)
+GPIO.setup(living_input, GPIO.IN)
 
 dine_input,dine_output =
 GPIO.setup(dine_output, GPIO.OUT)
@@ -83,13 +83,12 @@ def panel_command(message):
            message.chat.id,
            'These are the following commands for each room:' +
            '\n To control the gym lights press /gym.' +
-           '\n To control the bedroom lights press /bedroom.' +
-           '\n To control study room lights press /study.'+
+           '\n To control the bedroom and study lights press /bedroom.' +
            '\n To control living room lights press /living' +
            '\n To control dining room lights press /dining'
         )
     else:
-        text = 'I\'m sorry, I don\'t understand what you\'re saying. Please return to menu by pressing /menu'
+        text = 'I\'m sorry, I don\'t understand what you\'re saying. Please return to menu by pressing /menu.'
         bot.send_message(chat_id,text)
 
 
@@ -97,32 +96,31 @@ def panel_command(message):
 @bot.message_handler(commands=['gym'])
 def gym_command(message):
     chat_id = message.chat.id
-    if (files.checkhost(chat_id) or files.checkguest(chat_id)):
+    if (files.checkhost(chat_id)):
         keyboard = telebot.types.InlineKeyboardMarkup()
         keyboard.row(
             telebot.types.InlineKeyboardButton('Lights', callback_data='getp-glights')
       )
         bot.send_message(message.chat.id, 'Click on the appliance of choice:', reply_markup=keyboard)
     else:
-        text = 'I\'m sorry, I don\'t understand what you are saying.'
+        text = 'I\'m sorry, I don\'t understand what you\'re saying. Please return to menu by pressing /menu.'
         bot.send_message(chat_id,text)
 
 
 @bot.message_handler(commands=['bedroom'])
 def bedroom_command(message):
     chat_id = message.chat.id
-    if (files.checkhost(chat_id) or files.checkguest(chat_id)):
+    if (files.checkhost(chat_id)):
         keyboard = telebot.types.InlineKeyboardMarkup()
         keyboard.row(
             telebot.types.InlineKeyboardButton('Lights', callback_data='getp-blights')
       )
         keyboard.row(
-            telebot.types.InlineKeyboardButton('Bathroom Lights', callback_data='getp-btlights'))
+            telebot.types.InlineKeyboardButton('Study Lights', callback_data='getp-slights'))
         bot.send_message(message.chat.id, 'Click on the appliance of choice:', reply_markup=keyboard)
     else:
-        text = 'I\'m sorry, I don\'t understand what you are saying.'
+        text = 'I\'m sorry, I don\'t understand what you\'re saying. Please return to menu by pressing /menu'
         bot.send_message(chat_id,text)
-
 
 @bot.message_handler(commands=['living'])
 def living_command(message):
@@ -130,12 +128,23 @@ def living_command(message):
     if (files.checkhost(chat_id) or files.checkguest(chat_id)):
         keyboard = telebot.types.InlineKeyboardMarkup()
         keyboard.row(
-            telebot.types.InlineKeyboardButton('Wall Lights', callback_data='getp-llights'))
+            telebot.types.InlineKeyboardButton('Lights', callback_data='getp-llights'))
         bot.send_message(message.chat.id, 'Click on the appliance of choice:', reply_markup=keyboard)
     else:
-        text = 'I\'m sorry, I don\'t nderstand what you are saying'
+        text = 'I\'m sorry, I don\'t understand what you\'re saying. Please return to menu by pressing /menu'
         bot.send_message(chat_id,text)
 
+@bot.message_handler(commands=['dining'])
+def living_command(message):
+    chat_id = message.chat.id
+    if (files.checkhost(chat_id) or files.checkguest(chat_id)):
+        keyboard = telebot.types.InlineKeyboardMarkup()
+        keyboard.row(
+            telebot.types.InlineKeyboardButton('Lights', callback_data='getp-dlights'))
+        bot.send_message(message.chat.id, 'Click on the appliance of choice:', reply_markup=keyboard)
+    else:
+        text = 'I\'m sorry, I don\'t understand what you\'re saying. Please return to menu by pressing /menu.'
+        bot.send_message(chat_id,text)
 
 @bot.message_handler(commands=['camera'])
 def camera_command(message):
@@ -151,38 +160,38 @@ def camera_command(message):
       )
         bot.send_message(message.chat.id, 'Click on the choice:', reply_markup=keyboard)
     else:
-        text = 'I\'m sorry, I don\'t nderstand what you are saying'
+        text = 'I\'m sorry, I don\'t understand what you\'re saying. Please return to menu by pressing /menu.'
         bot.send_message(chat_id,text)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def iq_callback(query):
     data = query.data
-    if data.startswith('getp'):
+    if data.startswith('getp'):  #to access the appliances or back to menu
         get_ex1_callback(query)
-    elif data.startswith('turn-')and (data.endswith('-on')):
+    elif data.startswith('turn-')and (data.endswith('-on')): #to switch on the appliance
         get_ex2_callback(query)
-    elif data.startswith('turn-')and (data.endswith('-off')):
+    elif data.startswith('turn-')and (data.endswith('-off')): #to switch on the appliance
         get_ex3_callback(query)
-    elif data.startswith('getc'):
+    elif data.startswith('getc'): #camera commands
         get_ex4_callback(query)
-    elif data.startswith('req'):
+    elif data.startswith('req'): #request for approval to predef host
         get_ex5_callback(query)
-    elif data.startswith('reg'):
-        get_ex_callback(query)
+    elif data.startswith('reg'): #registeration of user as host or guest
+        get_ex6_callback(query)
 
 
 
-def get_ex1_callback(query):
+def get_ex1_callback(query):  #callback query for appliances
     bot.answer_callback_query(query.id)
     send_exchange1_result(query.message, query.data[5:])
 
-def get_ex2_callback(query):
+def get_ex2_callback(query): #call back query to turn on appliance
     bot.answer_callback_query(query.id)
     a = query.data[5:]
     send_exchange2_result(query.message, a[:-3],'on',a)
 
-def get_ex3_callback(query):
+def get_ex3_callback(query): #callback query to turn off appliance
     bot.answer_callback_query(query.id)
     a = query.data[5:]
     send_exchange2_result(query.message, a[:-4],'off',a)
@@ -192,58 +201,74 @@ def get_ex4_callback(query):
     send_exchange3_result(query.message, query.data[5:])
 
 
-def get_ex5_callback(query):
+def get_ex5_callback(query): #callback query message to access camera
     bot.answer_callback_query(query.id)
     send_exchange4_result(query.message, query.data[4:])
+
+def get_ex6_callback(query):
+    bot.answer_callback_query(query.id)
+    send_exchange5_result(query.message, query.data[4:])
 
 def send_exchange1_result(message, ex_code):
     keyboard = telebot.types.InlineKeyboardMarkup()
     bot.send_chat_action(message.chat.id, 'typing')
-    if ((ex_code)== 'klights'):
+    if ((ex_code)== 'glights'):
         messag = ""
-        if (GPIO.input(klights_input)==1):
-            messag = 'The kitchen light is already switched on.'
-        elif (GPIO.input(klights_input)==0):
-            messag= 'The kitchen light is currently switched off.'
+        if (GPIO.input(gym_input)==1):
+            messag = '\nThe gym light is already switched on.'
+        elif (GPIO.input(gym_input)==0):
+            messag= '\nThe gym light is currently switched off.'
         keyboard.row(
-        telebot.types.InlineKeyboardButton('Switch On', callback_data='turn-klights-on'),
-        telebot.types.InlineKeyboardButton('Switch Off', callback_data='turn-klights-off'))
+        telebot.types.InlineKeyboardButton('Switch On', callback_data='turn-glights-on'),
+        telebot.types.InlineKeyboardButton('Switch Off', callback_data='turn-glights-off'))
         keyboard.row(
         telebot.types.InlineKeyboardButton('Menu', callback_data='getp-menu'))
         bot.send_message(message.chat.id, messag+'Click on choice:', reply_markup=keyboard)
-    elif ((ex_code)== 'mlights'):
+    elif ((ex_code)== 'blights'):
         messag = ""
-        if (GPIO.input(mlights_input)==1):
-            messag = 'The room light is already switched on.'
-        elif (GPIO.input(mlights_input)==0):
-            messag = 'The room  light is currently switched off.'
+        if (GPIO.input(bed_input)==1):
+            messag = 'The bedroom is already switched on.'
+        elif (GPIO.input(bed_input)==0):
+            messag = 'The bedroom is currently switched off.'
         keyboard.row(
-        telebot.types.InlineKeyboardButton('Switch On', callback_data='turn-mlights-on'),
-        telebot.types.InlineKeyboardButton('Switch Off', callback_data='turn-mlights-off'))
+        telebot.types.InlineKeyboardButton('Switch On', callback_data='turn-blights-on'),
+        telebot.types.InlineKeyboardButton('Switch Off', callback_data='turn-blights-off'))
         keyboard.row(
         telebot.types.InlineKeyboardButton('Menu', callback_data='getp-menu'))
         bot.send_message(message.chat.id, messag+'Click on choice:', reply_markup=keyboard)
-    elif ((ex_code)== 'btlights'):
+    elif ((ex_code)== 'slights'):
         messag = ""
-        if (GPIO.input(btlights_input)==1):
-            messag = 'The bathroom light is already switched on.'
+        if (GPIO.input(study_input)==1):
+            messag = 'The study light is already switched on.'
         elif (GPIO.input(btlights_input)==0):
-            messag = 'The bathroom light is currently switched off.'
+            messag = 'The study light is currently switched off.'
         keyboard.row(
-        telebot.types.InlineKeyboardButton('Switch On', callback_data='turn-btlights-on'),
-        telebot.types.InlineKeyboardButton('Switch Off', callback_data='turn-btlights-off'))
+        telebot.types.InlineKeyboardButton('Switch On', callback_data='turn-slights-on'),
+        telebot.types.InlineKeyboardButton('Switch Off', callback_data='turn-slights-off'))
         keyboard.row(
         telebot.types.InlineKeyboardButton('Menu', callback_data='getp-menu'))
         bot.send_message(message.chat.id, messag+'Click on choice:', reply_markup=keyboard)
     elif ((ex_code)== 'llights'):
         messag = ""
-        if (GPIO.input(llights_input)==1):
-            messag = 'The Wall Lighting is already switched on.'
-        elif (GPIO.input(llights_input)==0):
-            messag = 'The Wall Lighting is currently switched off.'
+        if (GPIO.input(living_input)==1):
+            messag = 'The Living-Room Lighting is already switched on.'
+        elif (GPIO.input(living_input)==0):
+            messag = 'The Living-Room Lighting is currently switched off.'
         keyboard.row(
         telebot.types.InlineKeyboardButton('Switch On', callback_data='turn-llights-on'),
         telebot.types.InlineKeyboardButton('Switch Off', callback_data='turn-llights-off'))
+        keyboard.row(
+        telebot.types.InlineKeyboardButton('Menu', callback_data='getp-menu'))
+        bot.send_message(message.chat.id, messag+'Click on choice:', reply_markup=keyboard)
+    elif ((ex_code)== 'dlights'):
+        messag = ""
+        if (GPIO.input(dine_input)==1):
+            messag = 'The Dining-Room Lighting is already switched on.'
+        elif (GPIO.input(dine_input)==0):
+            messag = 'The Dining-Room Lighting is currently switched off.'
+        keyboard.row(
+        telebot.types.InlineKeyboardButton('Switch On', callback_data='turn-dlights-on'),
+        telebot.types.InlineKeyboardButton('Switch Off', callback_data='turn-dlights-off'))
         keyboard.row(
         telebot.types.InlineKeyboardButton('Menu', callback_data='getp-menu'))
         bot.send_message(message.chat.id, messag+'Click on choice:', reply_markup=keyboard)
@@ -259,15 +284,17 @@ def send_exchange2_result(message, ex1_code, ex2_code,ex_code):
         stat = 1
     elif ex2_code == 'off':
         stat = 0
-    text = "The appliance is " + ex2_code
-    if ((ex1_code)== 'klights'):
-        GPIO.output(klights_output, stat)
-    elif ((ex1_code)== 'mlights'):
-        GPIO.output(mlights_output, stat)
-    elif ((ex1_code)== 'btlights'):
-        GPIO.output(btlights_output, stat)
+    text = "The appliance is " + ex2_code ".\n"
+    if ((ex1_code)== 'glights'):
+        GPIO.output(gym_output, stat)
+    elif ((ex1_code)== 'blights'):
+        GPIO.output(bedroom_output, stat)
+    elif ((ex1_code)== 'slights'):
+        GPIO.output(study_output, stat)
     elif ((ex1_code)== 'llights'):
-        GPIO.output(llights_output, stat)
+        GPIO.output(living_output, stat)
+    elif ((ex1_code)== 'dlights'):
+        GPIO.output(dine_output, stat)
     bot.send_message(message.chat.id,text)
 
 
@@ -320,7 +347,7 @@ def send_exchange4_result(message, ex_code):
     bot.send_chat_action(message.chat.id, 'typing')
     if ((ex_code)=='new'):
         print('sending request to host')
-        text ='Hi! '+predefhost_name+' '+name+',is trying to access you\'re homie as a family member'
+        text ='Hi! '+predefhost_name+', '+name+' is trying to access you\'re homie as a family member'
         text+='.Do you appve him/her as a family member or guest or none..'
         keyboard = telebot.types.InlineKeyboardMarkup()
         keyboard.row(
@@ -331,11 +358,9 @@ def send_exchange4_result(message, ex_code):
     bot.send_message(predef_host,text, reply_markup=keyboard)
 
 
-def get_ex_callback(query):
-    bot.answer_callback_query(query.id)
-    send_exchange_result(query.message, query.data[4:])
 
-def send_exchange_result(message, ex_code):
+
+def send_exchange5_result(message, ex_code):
     keyboard = telebot.types.InlineKeyboardMarkup()
     bot.send_chat_action(message.chat.id, 'typing')
     ex_code_status = ex_code[0:3]
@@ -346,7 +371,7 @@ def send_exchange_result(message, ex_code):
     if ((ex_code_status)== 'mem'):
         files.appendhost(chat_id,name)
         bot.send_chat_action(chat_id, 'typing')
-        text = 'Congrats :)'+'you can freely communicate with me. Please press /menu to know what you can do.'
+        text = 'Congrats :)'+'you can freely communicate with me. Please press /menu to know what you can do. '
         bot.send_message(chat_id,text)
         print('Member added')
     elif ((ex_code_status)=='gue'):
